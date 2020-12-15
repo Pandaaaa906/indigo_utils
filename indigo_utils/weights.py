@@ -2,21 +2,16 @@ from indigo import Indigo, IndigoObject
 
 _indigo = Indigo()
 
-SYMBOL_ORDERING = {
-    'C': '0',
-    'H': '2',
-    'Cl': '3',
-    'N': '4',
-    'O': '5',
-    'P': '6',
-    'S': '7',
-}
 
-
-
-
-if __name__ == '__main__':
-    smiles = 'O=C(N)/[13C]([H])=C([2H])\[15NH]S(OP(O[Na])(O)=O)(=O)=O.Cl'
-    m = _indigo.loadMolecule(smiles)
-
-    pass
+def weight_with_sep(obj, sep=' ', n=2, ordering=-1):
+    if isinstance(obj, str):
+        m = _indigo.loadMolecule(obj)
+    elif isinstance(obj, IndigoObject):
+        m = obj
+    else:
+        raise TypeError(f'Wrong type received: {obj}')
+    smiles = m.canonicalSmiles()
+    ss = smiles.split('.')
+    ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda m: ordering*m.molecularWeight())
+    tmp = f'{{:.{n}f}}'
+    return sep.join((tmp.format(m.molecularWeight()) for m in ms))

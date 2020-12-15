@@ -22,7 +22,7 @@ def symbol_wrapper(symbol, isotope):
         return symbol
 
 
-def get_mf_from_obj(m: IndigoObject, symbol_ordering=None):
+def formula_from_obj(m: IndigoObject, symbol_ordering=None):
     symbol_ordering = SYMBOL_ORDERING if symbol_ordering is None else symbol_ordering
     m.unfoldHydrogens()
     d = {}
@@ -33,14 +33,7 @@ def get_mf_from_obj(m: IndigoObject, symbol_ordering=None):
     return ''.join((f'{symbol_wrapper(symbol, isotope)}{num if num > 1 else ""}' for (symbol, isotope), num in atoms))
 
 
-def get_sep_mf_from_smiles(smiles, sep=' '):
+def sep_formula_from_smiles(smiles, sep=' ', ordering=-1):
     ss = smiles.split('.')
-    return sep.join((get_mf_from_obj(_indigo.loadMolecule(s)) for s in ss))
-
-
-if __name__ == '__main__':
-    smiles = 'O=C(N)/[13C]([H])=C([2H])\[15NH]S(OP(O[Na])(O)=O)(=O)=O.Cl'
-    m = _indigo.loadMolecule(smiles)
-    print(get_mf_from_obj(m))
-    print(get_sep_mf_from_smiles(smiles))
-    pass
+    ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda m: ordering*m.molecularWeight())
+    return sep.join((formula_from_obj(m) for m in ms))
