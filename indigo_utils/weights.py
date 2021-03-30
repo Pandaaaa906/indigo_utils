@@ -12,7 +12,7 @@ def weight_with_sep(obj: Union[IndigoObject, str], sep=' ', n=2, ordering=-1):
         m = obj
     else:
         raise TypeError(f'Wrong type received: {type(obj)}')
-    smiles, = m.canonicalSmiles().split(' ')
+    smiles, *_ = m.canonicalSmiles().split(' ')
     ss = smiles.split('.')
     ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda m: ordering*m.molecularWeight())
     tmp = f'{{:.{n}f}}'
