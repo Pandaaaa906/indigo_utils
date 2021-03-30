@@ -34,7 +34,7 @@ def formula_from_obj(m: IndigoObject, symbol_ordering=None):
 
 
 def sep_formula_from_obj(m: IndigoObject, sep=' ', ordering=-1):
-    smiles = m.smiles()
+    smiles = m.canonicalSmiles()
     ss = smiles.split('.')
     ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda tmp: ordering*tmp.molecularWeight())
     return sep.join((formula_from_obj(m) for m in ms))
