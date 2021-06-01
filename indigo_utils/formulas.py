@@ -14,8 +14,10 @@ SYMBOL_ORDERING = {
 
 
 def symbol_wrapper(symbol, isotope):
-    if symbol == 'H' and isotope:
+    if symbol == 'H' and isotope == 2:
         return 'D'
+    elif symbol == 'H' and isotope == 3:
+        return 'T'
     elif isotope:
         return f'[{isotope}{symbol}]'
     else:
