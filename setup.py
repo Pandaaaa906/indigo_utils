@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="indigo_utils",
-    version="0.0.2",
+    version="0.0.3",
     author="Pandaaaa906",
     author_email="ye.pandaaaa906@gmail.com",
     description="A small useful tools for epam.indigo",
