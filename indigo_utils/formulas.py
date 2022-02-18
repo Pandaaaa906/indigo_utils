@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import Callable
 
 from indigo import Indigo, IndigoObject
@@ -35,14 +36,13 @@ def formula_from_obj(m: IndigoObject, symbol_ordering: Callable = None):
     return ''.join((f'{symbol_wrapper(symbol, isotope)}{num if num > 1 else ""}' for (symbol, isotope), num in atoms))
 
 
-def sep_formula_from_obj(m: IndigoObject, sep=' ', ordering=-1):
-    smiles, *_ = m.canonicalSmiles().split(' ')
-    ss = smiles.split('.')
-    ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda tmp: ordering * tmp.molecularWeight())
-    return sep.join((formula_from_obj(m) for m in ms))
-
-
 def sep_formula_from_smiles(smiles, sep=' ', ordering=-1):
     ss = smiles.split('.')
-    ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda m: ordering * m.molecularWeight())
-    return sep.join((formula_from_obj(m) for m in ms))
+    mc = Counter(ss)
+    ms = sorted(((_indigo.loadMolecule(s), c) for s, c in mc.items()), key=lambda m: ordering * m[0].molecularWeight())
+    return sep.join((f'{f"{c}*" if c > 1 else ""}{formula_from_obj(m)}' for m, c in ms))
+
+
+def sep_formula_from_obj(m: IndigoObject, sep=' ', ordering=-1):
+    smiles, *_ = m.canonicalSmiles().split(' ')
+    return sep_formula_from_smiles(smiles, sep=sep, ordering=ordering)

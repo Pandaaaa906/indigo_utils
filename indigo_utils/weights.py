@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import Union
 
 from indigo import Indigo, IndigoObject
@@ -14,6 +15,7 @@ def weight_with_sep(obj: Union[IndigoObject, str], sep=' ', n=2, ordering=-1):
         raise TypeError(f'Wrong type received: {type(obj)}')
     smiles, *_ = m.canonicalSmiles().split(' ')
     ss = smiles.split('.')
-    ms = sorted((_indigo.loadMolecule(s) for s in ss), key=lambda m: ordering*m.molecularWeight())
+    mc = Counter(ss)
+    ms = sorted(((_indigo.loadMolecule(s).molecularWeight(), c) for s, c in mc.items()), key=lambda x: ordering*x[0])
     tmp = f'{{:.{n}f}}'
-    return sep.join((tmp.format(m.molecularWeight()) for m in ms))
+    return sep.join((f'{f"{c}*" if c > 1 else ""}{tmp.format(mw)}' for mw, c in ms))
